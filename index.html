@@ -16,9 +16,8 @@
             --text-highlight: #d8c4f7;
             --success-glow: rgba(189, 147, 249, 0.7);
             --danger-color: #ff4757;
-            --gemini-glow: rgba(130, 101, 249, 0.9);
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-user-select: none; user-select: none; }
         body {
             font-family: 'Source Code Pro', monospace;
             background: var(--background-dark);
@@ -81,9 +80,7 @@
             background-color: #837fdc;
             box-shadow: 0 6px 15px var(--success-glow);
         }
-        #question { font-size: 1.1rem; margin-bottom: 30px; font-weight: bold; }
-        .options-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
-        .feedback-image, #memory-photo {
+        .feedback-image, #memory-photo, .defeat-gif {
             width: 100%;
             max-width: 300px;
             border-radius: 15px;
@@ -97,13 +94,15 @@
             animation: pulse 1s infinite;
         }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
-        #modal-wrong-answer {
+        
+        /* Modais */
+        .modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
+            background-color: rgba(0, 0, 0, 0.8);
             justify-content: center; align-items: center; z-index: 1000;
             display: none;
         }
-        #modal-wrong-answer.active { display: flex; }
+        .modal.active { display: flex; }
         .modal-content {
             background-color: var(--primary-purple); padding: 30px;
             border-radius: 15px; text-align: center;
@@ -112,83 +111,41 @@
         }
         .modal-content h2 { color: var(--danger-color); font-size: 1.2rem; }
         
-        /* Estilos para o jogo "Você me ama?" e Gemini */
-        .love-game-area { position: relative; height: 150px; display: flex; justify-content: center; align-items: center; }
-        .love-game-btn { position: absolute; }
-        #love-btn-no { background-color: var(--danger-color); }
-        .password-input { font-family: 'Source Code Pro', monospace; padding: 10px; width: 80%; border-radius: 5px; border: 2px solid var(--light-purple); background: var(--background-dark); color: var(--text-light); text-align: center; font-size: 1rem; }
-        .progress-bar-container { width: 100%; background-color: var(--background-dark); border-radius: 5px; margin-top: 10px; }
-        .progress-bar { height: 20px; width: 0%; background-color: var(--success-glow); border-radius: 5px; transition: width 0.1s; }
-        #gemini-btn { background: linear-gradient(45deg, #8e44ad, #d252e0); }
-        #gemini-btn:hover { box-shadow: 0 6px 15px var(--gemini-glow); }
-        #poem-container {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: rgba(0, 0, 0, 0.2);
+        /* Contadores */
+        .counter-box {
+            background-color: rgba(0,0,0,0.2);
+            padding: 10px;
             border-radius: 10px;
-            min-height: 100px;
-            white-space: pre-wrap; /* Mantém a formatação do poema */
-            font-style: italic;
-            text-align: left;
-            display: none;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            border: 1px solid var(--light-purple);
         }
-        .loading-spinner {
-            border: 4px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top: 4px solid var(--text-highlight);
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .counter-box p { margin-bottom: 5px; }
+
+        /* Estilos do Jogo Final */
+        .love-game-area { position: relative; height: 150px; display: flex; flex-direction: column; justify-content: center; align-items: center; touch-action: none; gap: 10px; }
+        .love-game-buttons { display: flex; gap: 10px; width: 100%; }
+        .password-input { font-family: 'Source Code Pro', monospace; padding: 10px; width: 80%; border-radius: 5px; border: 2px solid var(--light-purple); background: var(--background-dark); color: var(--text-light); text-align: center; font-size: 1rem; }
+        .volume-slider { width: 80%; -webkit-appearance: none; appearance: none; height: 15px; background: var(--background-dark); border-radius: 5px; outline: none; border: 2px solid var(--light-purple); }
+        .volume-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 25px; height: 25px; background: var(--light-purple); cursor: pointer; border-radius: 50%; }
+        .hidden-word { color: var(--primary-purple); cursor: pointer; transition: color 0.3s; }
+        .hidden-word:hover { color: var(--text-highlight); }
 
     </style>
 </head>
 <body>
     <div class="container">
         <!-- Telas do App -->
-        <div id="start-screen" class="screen active">
-            <h1>Para minha Gatinha</h1>
-            <p>Neném, preparei um pequeno quiz para relembrarmos nossa jornada. Não é pra ser difícil, mas vamos ver como está essa sua cabecinha de vento!</p>
-            <p class="heart">💜</p>
-            <button id="start-btn" class="btn">Começar</button>
-        </div>
-
+        <div id="start-screen" class="screen active"><h1>Para minha Gatinha</h1><p>Neném, preparei um pequeno quiz para relembrarmos nossa jornada.</p><div id="time-together-counter" class="counter-box"></div><p class="heart" style="margin-top: 20px;">💜</p><button id="start-btn" class="btn">Começar</button></div>
         <div id="quiz-screen" class="screen"><h2 id="question"></h2><div id="options-grid" class="options-grid"></div></div>
-
-        <div id="feedback-screen" class="screen">
-            <h2 id="feedback-message"></h2>
-            <img id="feedback-image" src="" alt="Memória do nosso momento">
-            <button id="continue-btn" class="btn">Continuar</button>
-        </div>
-
-        <div id="love-game-screen" class="screen">
-             <h2 id="love-question-title"></h2>
-             <div id="love-game-area" class="love-game-area"></div>
-        </div>
-
-        <div id="pre-result-screen" class="screen">
-            <h2>Ufa, você conseguiu!</h2>
-            <p>Parabéns, vc eh realmente insistente, acabou de falar um "sim" pra cada mês que estamos juntos!</p>
-            <p>Agora eh pra sempre em, cuidado... 😉</p>
-            <button id="final-reveal-btn" class="btn">Ver minha surpresa</button>
-        </div>
-
-        <div id="result-screen" class="screen">
-            <h2>Para a minha eterna namorada, Bella</h2>
-            <p>Princesa, cada resposta só prova o que eu já sei: nossa sintonia é de outro universo. Desde nosso primeiro encontro para ver Alien até as nossas conversas sobre Duna e Silmarillion, você coloriu meu mundo de uma forma que eu nunca imaginei ser possível.</p>
-            <p>Feliz Dia dos Namorados, meu amor. Com todo meu coração,<br>Seu Pedro Mariano <span class="heart">❤</span></p>
-            <img id="memory-photo" src="https://placehold.co/600x400/4a47a3/f0eafc?text=Nossa+Foto+Principal" alt="Nossa memória especial">
-            <button id="gemini-btn" class="btn">✨ Gerar um Poema para Nós</button>
-            <div id="poem-container"></div>
-        </div>
-
-        <div id="modal-wrong-answer"><div class="modal-content">
-            <h2>Quem é você, cadê minha namorada???</h2>
-            <p>Brincadeira, tá tudo certo. Só não me conta que vou falar que você não me amaaa. Vamos tentar de novo :p</p>
-            <button id="restart-btn" class="btn">Tentar Novamente</button>
-        </div></div>
+        <div id="feedback-screen" class="screen"><h2 id="feedback-message"></h2><img id="feedback-image" src="" alt="Memória do nosso momento"><button id="continue-btn" class="btn">Continuar</button></div>
+        <div id="love-game-screen" class="screen"><h2 id="love-question-title"></h2><div id="love-game-area" class="love-game-area"></div></div>
+        <div id="pre-result-screen" class="screen"><h2>Ufa, você conseguiu!</h2><p>Parabéns, vc eh realmente insistente, acabou de falar um "sim" pra cada mês que estamos juntos!</p><p>Agora eh pra sempre em, cuidado... 😉</p><button id="final-reveal-btn" class="btn">Ver minha surpresa</button></div>
+        <div id="result-screen" class="screen"><h2>Para a minha eterna namorada, Bella</h2><p>Princesa, cada resposta só prova o que eu já sei: nossa sintonia é de outro universo. Desde nosso primeiro encontro para ver Alien até as nossas conversas sobre Duna e Silmarillion, você coloriu meu mundo de uma forma que eu nunca imaginei ser possível.</p><div id="reunion-countdown" class="counter-box"></div><img id="memory-photo" src="https://placehold.co/600x400/4a47a3/f0eafc?text=Nossa+Foto+Principal" alt="Nossa memória especial"></div>
+        
+        <!-- Modais -->
+        <div id="modal-wrong-answer" class="modal"><div class="modal-content"><h2>Quem é você, cadê minha namorada???</h2><p>Brincadeira, tá tudo certo. Só não me conta que vou falar que você não me amaaa. Vamos tentar de novo :p</p><button id="restart-btn" class="btn">Tentar Novamente</button></div></div>
+        <div id="love-defeat-screen" class="modal"><div class="modal-content"><h2>Oh não! Você desistiu do nosso amor?</h2><p>Estou chocado! Clique abaixo para provar que foi um engano.</p><img class="defeat-gif" src="https://media.tenor.com/JbsJt5T1FNEAAAAC/crying-sad.gif" alt="Derrota no amor"><button id="love-restart-btn" class="btn">Foi engano, eu te amo!</button></div></div>
     </div>
 
     <script>
@@ -197,19 +154,15 @@
             feedback: document.getElementById('feedback-screen'), result: document.getElementById('result-screen'),
             loveGame: document.getElementById('love-game-screen'), preResult: document.getElementById('pre-result-screen'),
             wrongAnswerModal: document.getElementById('modal-wrong-answer'),
+            loveDefeat: document.getElementById('love-defeat-screen'),
         };
         const buttons = {
             start: document.getElementById('start-btn'), continue: document.getElementById('continue-btn'),
             restart: document.getElementById('restart-btn'), finalReveal: document.getElementById('final-reveal-btn'),
-            gemini: document.getElementById('gemini-btn')
+            loveRestart: document.getElementById('love-restart-btn'),
         };
-        const elements = {
-            question: document.getElementById('question'), optionsGrid: document.getElementById('options-grid'),
-            feedbackMessage: document.getElementById('feedback-message'), feedbackImage: document.getElementById('feedback-image'),
-            memoryPhoto: document.getElementById('memory-photo'), loveQuestionTitle: document.getElementById('love-question-title'),
-            loveGameArea: document.getElementById('love-game-area'),
-            poemContainer: document.getElementById('poem-container'),
-        };
+        const elements = { loveGameArea: document.getElementById('love-game-area'), loveQuestionTitle: document.getElementById('love-question-title'), memoryPhoto: document.getElementById('memory-photo'), optionsGrid: document.getElementById('options-grid'), question: document.getElementById('question'), feedbackImage: document.getElementById('feedback-image'), feedbackMessage: document.getElementById('feedback-message'),
+        timeTogetherCounter: document.getElementById('time-together-counter'), reunionCountdown: document.getElementById('reunion-countdown') };
 
         const quizQuestions = [
             { question: "Qual foi a aventura cinematográfica que deu início a tudo para nós?", options: ["Vingadores: Ultimato", "Duna: Parte Dois", "Alien: Romulus", "O Protetor 3"], correctAnswer: "Alien: Romulus", correctMessage: "Exato! Foi ali que nossa história começou.", correctImage: "https://placehold.co/600x400/1e1a3e/f0eafc?text=Foto+do+Alien" },
@@ -221,137 +174,182 @@
             { question: "[SUA PERGUNTA 7 AQUI]", options: ["Sua Resposta Certa", "Opção B", "Opção C", "Opção D"], correctAnswer: "Sua Resposta Certa", correctMessage: "[Sua mensagem de acerto aqui]", correctImage: "https://placehold.co/600x400/1e1a3e/f0eafc?text=Sua+Imagem+7" },
             { question: "[SUA PERGUNTA 8 AQUI]", options: ["Opção A", "Opção B", "Opção C", "Sua Resposta Certa"], correctAnswer: "Sua Resposta Certa", correctMessage: "[Sua mensagem de acerto aqui]", correctImage: "https://placehold.co/600x400/1e1a3e/f0eafc?text=Sua+Imagem+8" }
         ];
-
         let loveQuestionIndex = 0;
         let currentQuestionIndex = 0;
 
         const loveChallenges = [
-            { title: "Ok, vamos lá... Você me ama?", type: 'standard' }, { title: "Tem certeza? O botão 'Não' parece tentador...", type: 'flee' },
-            { title: "E agora? Encontre o 'Sim'!", type: 'tiny' }, { title: "Qual a senha de 3 letras do nosso amor?", type: 'password' },
-            { title: "Ok, seja rápida! Me ame!", type: 'chase' }, { title: "Prove! Segure o 'Sim' com todo seu amor!", type: 'hold' },
-            { title: "Pegadinha! O que você deve clicar?", type: 'fakeout' }, { title: "Você é forte? Clique 5 vezes no 'Sim'!", type: 'rapid_click' },
-            { title: "O 'Sim' está tímido... Quase invisível.", type: 'hidden' }, { title: "Desafio final! Acredite no seu coração... e na sua memória!", type: 'invisible' }
+            { title: "Para começar... Você me ama?", type: 'standard' },
+            { title: "Seu amor é grande? Encontre o 'Sim'!", type: 'tiny_button' },
+            { title: "Arraste o 'Não' para longe do meu coração!", type: 'drag_away' },
+            { title: "A senha do nosso amor é a resposta óbvia...", type: 'password' },
+            { title: "Aumente o volume do nosso amor ao máximo!", type: 'slider' },
+            { title: "O 'Sim' está camuflado. Seja detetive!", type: 'camouflaged' },
+            { title: "A resposta certa é óbvia...", type: 'obvious_choice' },
+            { title: "Uma parte de mim está <span class='hidden-word'>escondida</span> aqui. Encontre-a.", type: 'hidden_word' },
+            { title: "Você é forte? Clique 5 vezes no 'Sim'!", type: 'rapid_click' },
+            { title: "Último desafio: um salto de fé cego de amor!", type: 'invisible' }
         ];
-        
-        // --- Lógica da API Gemini ---
-        async function generatePoem() {
-            elements.poemContainer.style.display = 'block';
-            elements.poemContainer.innerHTML = '<div class="loading-spinner"></div>';
-            buttons.gemini.disabled = true;
 
-            const prompt = `Crie um poema de amor curto e romântico em português para um casal chamado Pedro Mariano e Isabella Trajano. Ele a chama de 'neném', 'princesa' e 'gatinha'. Eles têm um relacionamento à distância (ele em Pato Branco, ela em Santos). Detalhes importantes: o primeiro encontro foi para assistir 'Alien', ele a fez ler 'Duna' e ela o fez ler 'Silmarillion'. Ele diz que ela 'recuperou a cor' da vida dele. Eles adoram a cor roxa e têm uma cadelinha chamada Caju. O poema deve ser original e emocionante.`;
-
-            try {
-                const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
-                const payload = { contents: chatHistory };
-                const apiKey = ""; // A chave da API será fornecida pelo ambiente
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-                
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Erro na API: ${response.statusText}`);
-                }
-
-                const result = await response.json();
-                
-                if (result.candidates && result.candidates.length > 0 && result.candidates[0].content && result.candidates[0].content.parts && result.candidates[0].content.parts.length > 0) {
-                    const poemText = result.candidates[0].content.parts[0].text;
-                    elements.poemContainer.innerText = poemText;
-                } else {
-                    elements.poemContainer.innerText = "Não consegui criar um poema agora... mas o nosso amor já é a mais bela poesia.";
-                }
-
-            } catch (error) {
-                console.error("Erro ao chamar a API Gemini:", error);
-                elements.poemContainer.innerText = "Ocorreu um erro ao tentar criar a mágica. Tente novamente mais tarde!";
-            } finally {
-                buttons.gemini.disabled = false;
+        function createButton(text, isYes) {
+            const btn = document.createElement('button');
+            btn.innerText = text;
+            btn.classList.add('btn');
+            if (isYes) {
+                btn.addEventListener('click', handleLoveYes);
+            } else {
+                btn.addEventListener('click', showLoveDefeatScreen);
             }
+            return btn;
         }
-
-        // --- Lógica do Jogo "Você me ama?" ---
+        
         function setupLoveChallenge() {
-            elements.loveGameArea.innerHTML = ''; // Limpa a área
+            elements.loveGameArea.innerHTML = '';
             const challenge = loveChallenges[loveQuestionIndex];
-            elements.loveQuestionTitle.innerText = challenge.title;
+            elements.loveQuestionTitle.innerHTML = challenge.title;
+            const btnNo = createButton('Não', false);
             
-            let btnYes = document.createElement('button');
-            btnYes.innerText = 'Sim';
-            btnYes.classList.add('btn');
-            
-            let btnNo = document.createElement('button');
-            btnNo.innerText = 'Não';
-            btnNo.id = 'love-btn-no';
-            btnNo.classList.add('btn');
+            const buttonContainer = document.createElement('div');
+            buttonContainer.className = 'love-game-buttons';
 
             switch (challenge.type) {
-                case 'flee': btnNo.addEventListener('mouseover', fleeButton); elements.loveGameArea.append(btnYes, btnNo); break;
-                case 'tiny':
-                    btnYes.style.position = 'absolute'; btnYes.style.transform = 'scale(0.3)';
-                    btnYes.style.top = `${Math.random() * 85}%`; btnYes.style.left = `${Math.random() * 85}%`;
-                    btnYes.style.zIndex = 2; btnNo.style.position = 'absolute';
-                    btnNo.style.top = '50%'; btnNo.style.left = '50%';
-                    btnNo.style.transform = 'translate(-50%, -50%) scale(1.5)'; btnNo.style.zIndex = 1;
-                    elements.loveGameArea.append(btnNo, btnYes); break;
+                case 'drag_away':
+                    const btnYesDrag = createButton('Sim', true);
+                    btnNo.style.position = 'absolute';
+                    btnNo.style.zIndex = '2';
+                    btnYesDrag.style.zIndex = '1';
+                    makeDraggable(btnNo);
+                    elements.loveGameArea.append(btnYesDrag, btnNo);
+                    break;
+                case 'tiny_button':
+                    const btnYesTiny = createButton('Sim', true);
+                    btnYesTiny.style.position = 'absolute';
+                    btnYesTiny.style.transform = 'scale(0.3)';
+                    btnYesTiny.style.zIndex = '2';
+                    const area = elements.loveGameArea.getBoundingClientRect();
+                    const top = Math.min(area.height - 40, Math.random() * area.height);
+                    const left = Math.min(area.width - 50, Math.random() * area.width);
+                    btnYesTiny.style.top = `${top}px`;
+                    btnYesTiny.style.left = `${left}px`;
+                    elements.loveGameArea.append(btnYesTiny, btnNo);
+                    break;
                 case 'password':
-                    const input = document.createElement('input'); input.type = 'text'; input.placeholder = 'Digite aqui';
-                    input.classList.add('password-input'); input.addEventListener('input', () => { if (input.value.toLowerCase() === 'sim') handleLoveYes(); });
-                    elements.loveGameArea.append(input); break;
-                case 'chase':
-                    btnYes.style.position = 'absolute';
-                    const chaseInterval = setInterval(() => { if(loveChallenges[loveQuestionIndex].type !== 'chase') clearInterval(chaseInterval); btnYes.style.top = `${Math.random()*80}%`; btnYes.style.left = `${Math.random()*80}%`; }, 800);
-                    elements.loveGameArea.append(btnYes); break;
-                case 'hold':
-                    let holdTimeout; const pContainer = document.createElement('div'); pContainer.className = 'progress-bar-container';
-                    const pBar = document.createElement('div'); pBar.className = 'progress-bar'; pContainer.append(pBar);
-                    const startHold = () => { let width = 0; holdTimeout = setInterval(() => { width += 5; pBar.style.width = `${width}%`; if(width >= 100) { clearInterval(holdTimeout); handleLoveYes(); } }, 50); };
-                    const stopHold = () => { clearInterval(holdTimeout); pBar.style.width = '0%'; };
-                    btnYes.onmousedown = startHold; btnYes.onmouseup = stopHold;
-                    btnYes.ontouchstart = startHold; btnYes.ontouchend = stopHold;
-                    elements.loveGameArea.append(btnYes, pContainer); break;
-                case 'fakeout':
-                    btnYes.innerText = "Não"; btnNo.innerText = "Sim"; btnNo.id = ''; btnYes.id = 'love-btn-no';
-                    btnNo.addEventListener('mouseover', fleeButton); elements.loveGameArea.append(btnYes, btnNo); break;
+                    const input = document.createElement('input');
+                    input.type = 'text'; input.placeholder = 'Digite aqui'; input.classList.add('password-input');
+                    input.addEventListener('input', () => { if (input.value.toLowerCase() === 'sim') handleLoveYes(); });
+                    elements.loveGameArea.append(input);
+                    break;
+                case 'slider':
+                    const slider = document.createElement('input');
+                    slider.type = 'range'; slider.min = '0'; slider.max = '100'; slider.value = '0'; slider.classList.add('volume-slider');
+                    slider.addEventListener('input', () => { if (slider.value === '100') handleLoveYes(); });
+                    elements.loveGameArea.append(slider);
+                    break;
+                case 'hidden_word':
+                    document.querySelector('.hidden-word').addEventListener('click', handleLoveYes);
+                    break;
                 case 'rapid_click':
-                    let clickCount = 0; btnYes.onclick = () => { clickCount++; btnYes.innerText = `Sim (${clickCount}/5)`; if (clickCount >= 5) handleLoveYes(); };
-                    elements.loveGameArea.append(btnYes); break;
-                case 'hidden': btnYes.style.opacity = '0.1'; elements.loveGameArea.append(btnYes, btnNo); break;
-                case 'invisible': btnYes.style.opacity = '0'; btnNo.style.opacity = '0'; elements.loveGameArea.append(btnYes, btnNo); break;
-                default: elements.loveGameArea.append(btnYes, btnNo); break;
+                    let clickCount = 0;
+                    const btnYesRapid = document.createElement('button');
+                    btnYesRapid.innerText = 'Sim (0/5)';
+                    btnYesRapid.classList.add('btn');
+                    btnYesRapid.onclick = () => {
+                        clickCount++;
+                        btnYesRapid.innerText = `Sim (${clickCount}/5)`;
+                        if (clickCount >= 5) handleLoveYes();
+                    };
+                    buttonContainer.append(btnYesRapid, btnNo);
+                    elements.loveGameArea.append(buttonContainer);
+                    break;
+                case 'camouflaged':
+                     const btnYesCamo = createButton('Sim', true);
+                     btnYesCamo.style.position = 'absolute';
+                     btnYesCamo.style.color = 'var(--primary-purple)';
+                     btnYesCamo.style.background = 'var(--primary-purple)';
+                     btnYesCamo.style.border = '1px solid var(--background-dark)';
+                     btnYesCamo.style.boxShadow = 'none';
+                     const camoArea = elements.loveGameArea.getBoundingClientRect();
+                     btnYesCamo.style.top = `${Math.min(camoArea.height - 40, Math.random() * camoArea.height)}px`;
+                     btnYesCamo.style.left = `${Math.min(camoArea.width - 80, Math.random() * camoArea.width)}px`;
+                     elements.loveGameArea.append(btnYesCamo);
+                     break;
+                case 'obvious_choice':
+                    const btnObvious = createButton('Claro!', true);
+                    const btnTrap = createButton('Sim', false);
+                    buttonContainer.append(btnObvious, btnTrap);
+                    elements.loveGameArea.append(buttonContainer);
+                    break;
+                case 'invisible':
+                     const btnYesInvisible = createButton('Sim', true);
+                     btnYesInvisible.style.opacity = '0';
+                     btnNo.style.opacity = '0';
+                     buttonContainer.append(btnYesInvisible, btnNo);
+                     elements.loveGameArea.append(buttonContainer);
+                     break;
+                default: // standard
+                    const btnYesStandard = createButton('Sim', true);
+                    buttonContainer.append(btnYesStandard, btnNo);
+                    elements.loveGameArea.append(buttonContainer);
+                    break;
             }
-            if (!['password', 'hold', 'rapid_click', 'fakeout'].includes(challenge.type)) { btnYes.addEventListener('click', handleLoveYes); } 
-            else if (challenge.type === 'fakeout') { document.getElementById('love-btn-no').addEventListener('click', handleLoveYes); }
         }
-        function fleeButton() { const area = elements.loveGameArea; this.style.position = 'absolute'; this.style.top = `${Math.random() * (area.offsetHeight - this.offsetHeight)}px`; this.style.left = `${Math.random() * (area.offsetWidth - this.offsetWidth)}px`; }
+        
+        function makeDraggable(element) {
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            const dragStart = (e) => { e.preventDefault(); pos3 = e.clientX || e.touches[0].clientX; pos4 = e.clientY || e.touches[0].clientY; document.onmouseup = dragEnd; document.ontouchend = dragEnd; document.onmousemove = dragMove; document.ontouchmove = dragMove; };
+            const dragMove = (e) => { e.preventDefault(); pos1 = pos3 - (e.clientX || e.touches[0].clientX); pos2 = pos4 - (e.clientY || e.touches[0].clientY); pos3 = e.clientX || e.touches[0].clientX; pos4 = e.clientY || e.touches[0].clientY; element.style.top = (element.offsetTop - pos2) + "px"; element.style.left = (element.offsetLeft - pos1) + "px"; };
+            const dragEnd = () => { document.onmouseup = null; document.onmousemove = null; document.ontouchend = null; document.ontouchmove = null; };
+            element.onmousedown = dragStart;
+            element.ontouchstart = dragStart;
+        }
+        
         function handleLoveYes() { loveQuestionIndex++; if (loveQuestionIndex < loveChallenges.length) { setupLoveChallenge(); } else { switchScreen('preResult'); } }
+        function showLoveDefeatScreen() { screens.loveDefeat.classList.add('active'); }
+        function restartLoveGame() { screens.loveDefeat.classList.remove('active'); loveQuestionIndex = 0; switchScreen('loveGame'); setupLoveChallenge(); }
         
         function switchScreen(screenName) { for (const key in screens) { screens[key].classList.remove('active'); } screens[screenName].classList.add('active'); }
         function startQuiz() { currentQuestionIndex = 0; switchScreen('quiz'); showQuestion(); }
-        function showQuestion() {
-            elements.optionsGrid.innerHTML = ''; const q = quizQuestions[currentQuestionIndex];
-            elements.question.innerText = q.question;
-            q.options.forEach(opt => { const btn = document.createElement('button'); btn.innerText = opt; btn.classList.add('btn'); btn.addEventListener('click', () => checkAnswer(opt)); elements.optionsGrid.appendChild(btn); });
-        }
+        function showQuestion() { elements.optionsGrid.innerHTML = ''; const q = quizQuestions[currentQuestionIndex]; elements.question.innerText = q.question; q.options.forEach(opt => { const btn = document.createElement('button'); btn.innerText = opt; btn.classList.add('btn'); btn.addEventListener('click', () => checkAnswer(opt)); elements.optionsGrid.appendChild(btn); }); }
         function checkAnswer(selected) { if (selected === quizQuestions[currentQuestionIndex].correctAnswer) { showFeedback(); } else { screens.wrongAnswerModal.classList.add('active'); } }
         function showFeedback() { const q = quizQuestions[currentQuestionIndex]; elements.feedbackMessage.innerText = q.correctMessage; elements.feedbackImage.src = q.correctImage; switchScreen('feedback'); }
         function nextStep() { currentQuestionIndex++; if (currentQuestionIndex < quizQuestions.length) { switchScreen('quiz'); showQuestion(); } else { loveQuestionIndex = 0; switchScreen('loveGame'); setupLoveChallenge(); } }
-        function showFinalResult() {
-            elements.memoryPhoto.src = "nossa-foto-principal.jpg"; 
-            elements.memoryPhoto.onerror = () => { elements.memoryPhoto.src = "https://placehold.co/600x400/4a47a3/f0eafc?text=Nossa+Foto+Principal"; };
-            switchScreen('result');
-        }
+        function showFinalResult() { elements.memoryPhoto.src = "nossa-foto-principal.jpg"; elements.memoryPhoto.onerror = () => { elements.memoryPhoto.src = "https://placehold.co/600x400/4a47a3/f0eafc?text=Nossa+Foto+Principal"; }; switchScreen('result'); startReunionCountdown(); }
         function restartQuiz() { screens.wrongAnswerModal.classList.remove('active'); startQuiz(); }
+        
+        // Contadores
+        function startProgressiveCounter() {
+            // Data de início: 21 de Julho de 2024 às 20:08
+            const startTime = new Date('2024-07-21T20:08:00');
+            setInterval(() => {
+                const now = new Date();
+                const diff = now - startTime;
+                const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((diff % (1000 * 60)) / 1000);
+                elements.timeTogetherCounter.innerHTML = `<p>Nosso tempo juntos:</p>${d}d ${h}h ${m}m ${s}s`;
+            }, 1000);
+        }
+        function startReunionCountdown() {
+            // Data do reencontro: 11 de Julho de 2025 às 22:00
+            const reunionTime = new Date('2025-07-11T22:00:00');
+            setInterval(() => {
+                const now = new Date();
+                const diff = reunionTime - now;
+                if (diff < 0) { elements.reunionCountdown.innerHTML = "O nosso reencontro está próximo!"; return; }
+                const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((diff % (1000 * 60)) / 1000);
+                elements.reunionCountdown.innerHTML = `<p>Falta para o nosso reencontro:</p>${d}d ${h}h ${m}m ${s}s`;
+            }, 1000);
+        }
 
+        document.addEventListener('DOMContentLoaded', startProgressiveCounter);
         buttons.start.addEventListener('click', startQuiz);
         buttons.continue.addEventListener('click', nextStep);
         buttons.restart.addEventListener('click', restartQuiz);
+        buttons.loveRestart.addEventListener('click', restartLoveGame);
         buttons.finalReveal.addEventListener('click', showFinalResult);
-        buttons.gemini.addEventListener('click', generatePoem);
     </script>
 </body>
 </html>
