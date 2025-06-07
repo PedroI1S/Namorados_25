@@ -136,16 +136,16 @@
 <body>
     <div class="container">
         <!-- Telas do App -->
-        <div id="start-screen" class="screen active"><h1>Para minha Gatinha</h1><p>Neném, preparei um pequeno quiz para relembrarmos nossa jornada.</p><div id="time-together-counter" class="counter-box"></div><p class="heart" style="margin-top: 20px;">💜</p><button id="start-btn" class="btn">Começar</button></div>
+        <div id="start-screen" class="screen active"><h1>Para minha Gatinha</h1><p>Neném, preparei uma bobeirinha pra esse nosso primeiro (de muitos) dia dos namorados, queria poder estar ai com você, mas como não posso, espero que dessa forma consiga tirar um sorriso desse seu rostinho lindo.</p><div id="time-together-counter" class="counter-box"></div><p class="heart" style="margin-top: 20px;">💜</p><button id="start-btn" class="btn">Começar</button></div>
         <div id="quiz-screen" class="screen"><h2 id="question"></h2><div id="options-grid" class="options-grid"></div></div>
         <div id="feedback-screen" class="screen"><h2 id="feedback-message"></h2><img id="feedback-image" src="" alt="Memória do nosso momento"><button id="continue-btn" class="btn">Continuar</button></div>
         <div id="love-game-screen" class="screen"><h2 id="love-question-title"></h2><div id="love-game-area" class="love-game-area"></div></div>
-        <div id="pre-result-screen" class="screen"><h2>Ufa, você conseguiu!</h2><p>Parabéns, vc eh realmente insistente, acabou de falar um "sim" pra cada mês que estamos juntos!</p><p>Agora eh pra sempre em, cuidado... 😉</p><button id="start-quiz-btn" class="btn">Começar o Quiz!</button></div>
-        <div id="result-screen" class="screen"><h2>Para a minha eterna namorada, Bella</h2><p>Princesa, cada resposta só prova o que eu já sei: nossa sintonia é de outro universo. Desde nosso primeiro encontro para ver Alien até as nossas conversas sobre Duna e Silmarillion, você coloriu meu mundo de uma forma que eu nunca imaginei ser possível.</p><div id="reunion-countdown" class="counter-box"></div><img id="memory-photo" src="https://placehold.co/600x400/4a47a3/f0eafc?text=Nossa+Foto+Principal" alt="Nossa memória especial"></div>
+        <div id="pre-result-screen" class="screen"><h2>Olha, e eu achei que o papel de teimoso da relação fosse meu!</h2><p>Parabéns, vc eh realmente insistente, acabou de falar um "sim" pra cada mês que estamos juntos!</p><p>Meses de uma montanha russa de sentimentos sem fim. Agora eh pra sempre em, cuidado... </p><button id="start-quiz-btn" class="btn">Proxima etapa!</button></div>
+        <div id="result-screen" class="screen"><h2>Para a minha eterna namorada, Bella</h2><p>Oi meu amor, deixei pra fazer isso por último acredita?   ...</p><div id="reunion-countdown" class="counter-box"></div><img id="memory-photo" src="https://placehold.co/600x400/4a47a3/f0eafc?text=Nossa+Foto+Principal" alt="Nossa memória especial"></div>
         
         <!-- Modais -->
         <div id="modal-wrong-answer" class="modal"><div class="modal-content"><h2>Quem é você, cadê minha namorada???</h2><p>Brincadeira, tá tudo certo. Só não me conta que vou falar que você não me amaaa. Vamos tentar de novo :p</p><button id="restart-btn" class="btn">Tentar Novamente</button></div></div>
-        <div id="love-defeat-screen" class="modal"><div class="modal-content"><h2>Oh não! Você desistiu do nosso amor?</h2><p>Estou chocado! Clique abaixo para provar que foi um engano.</p><img class="defeat-gif" src="https://media.tenor.com/JbsJt5T1FNEAAAAC/crying-sad.gif" alt="Derrota no amor"><button id="love-restart-btn" class="btn">Foi engano, eu te amo!</button></div></div>
+        <div id="love-defeat-screen" class="modal"><div class="modal-content"><h2>Sempre soubeeee!!</h2><p>Brincadeira! Mais capaz que eu que fiz alguma merda :p mas vc me conhece vou te culpar igual</p><img class="defeat-gif" src="https://media1.tenor.com/m/BE_k7EcfWaoAAAAd/rain-wet.gif" alt="Derrota no amor"><button id="love-restart-btn" class="btn">Vai de novo então?</button></div></div>
     </div>
 
     <script>
@@ -179,15 +179,15 @@
 
         const loveChallenges = [
             { title: "Para começar... Você me ama?", type: 'standard' },
-            { title: "Seu amor é grande? Encontre o 'Sim'!", type: 'tiny_button' },
-            { title: "Arraste o 'Não' para longe do meu coração!", type: 'drag_away' },
-            { title: "A senha do nosso amor é a resposta óbvia...", type: 'password' },
-            { title: "Aumente o volume do nosso amor ao máximo!", type: 'slider' },
-            { title: "O 'Sim' está camuflado. Seja detetive!", type: 'camouflaged' },
-            { title: "A resposta certa é óbvia...", type: 'obvious_choice' },
-            { title: "Uma parte de mim está <span class='hidden-word'>escondida</span> aqui. Encontre-a.", type: 'hidden_word' },
-            { title: "Você é forte? Clique 5 vezes no 'Sim'!", type: 'rapid_click' },
-            { title: "Último desafio: um salto de fé cego de amor!", type: 'invisible' }
+            { title: "Uhm, tem certeza disso?", type: 'tiny_button' },
+            { title: "Acho que não em, vai continuar arrastando esse papo?", type: 'drag_away' },
+            { title: "Vai me amar mesmo quando eu tiver fechadinho e escondido?", type: 'camouflaged' },
+            { title: "Mesmo quando você tiver que insistir, todo o santo dia, que eu sou boitinho até?", type: 'rapid_click' },
+            { title: "Certeza? Até mesmo quando tiver tudo triste e sombrio?", type: 'obvious_choice' },
+            { title: "Uhm, vamos ver se você tá com essa dedicação toda", type: 'password' },
+            { title: "Tá vamos supor que você me ama, se for verdade, quanto?", type: 'slider' },
+            { title: "E quando a gente tiver junto a muito tempo, e <span class='hidden-word'>sim</span> ocorrerem aquelas briguinhas bobas ou as coisas estiverem dificeis", type: 'hidden_word' },
+            { title: "Então tá bom amor, promete que não vai esquecer nosso amor não importa o que aconteça?", type: 'invisible' }
         ];
 
         function createButton(text, isYes) {
