@@ -182,9 +182,9 @@
             { title: "Uhm, tem certeza disso?", type: 'tiny_button' },
             { title: "Acho que não em, vai continuar arrastando esse papo?", type: 'drag_away' },
             { title: "Vai me amar mesmo quando eu tiver fechadinho e escondido?", type: 'camouflaged' },
-            { title: "Mesmo quando você tiver que insistir, todo o santo dia, que eu sou boitinho até?", type: 'rapid_click' },
-            { title: "Certeza? Até mesmo quando tiver tudo triste e sombrio?", type: 'obvious_choice' },
-            { title: "Uhm, vamos ver se você tá com essa dedicação toda", type: 'password' },
+            { title: "Mesmo quando você tiver que insistir, todo o santo dia, que eu sou bonitinho até?", type: 'rapid_click' },
+            { title: "Certeza? Até mesmo quando eu tiver confuso, fazendo tudo parecer o contrário?", type: 'obvious_choice' },
+            { title: "Está pronta para assinar em baixo?", type: 'password' },
             { title: "Tá vamos supor que você me ama, se for verdade, quanto?", type: 'slider' },
             { title: "E quando a gente tiver junto a muito tempo, e <span class='hidden-word'>sim</span> ocorrerem aquelas briguinhas bobas ou as coisas estiverem dificeis", type: 'hidden_word' },
             { title: "Então tá bom amor, promete que não vai esquecer nosso amor não importa o que aconteça?", type: 'invisible' }
@@ -250,11 +250,11 @@
                 case 'rapid_click':
                     let clickCount = 0;
                     const btnYesRapid = document.createElement('button');
-                    btnYesRapid.innerText = 'Sim (0/5)';
+                    btnYesRapid.innerText = 'Sim';
                     btnYesRapid.classList.add('btn');
                     btnYesRapid.onclick = () => {
                         clickCount++;
-                        btnYesRapid.innerText = `Sim (${clickCount}/5)`;
+                        btnYesRapid.innerText = `Sim`;
                         if (clickCount >= 5) handleLoveYes();
                     };
                     buttonContainer.append(btnYesRapid, btnNo);
@@ -265,7 +265,7 @@
                      btnYesCamo.style.position = 'absolute';
                      btnYesCamo.style.color = 'var(--primary-purple)';
                      btnYesCamo.style.background = 'var(--primary-purple)';
-                     btnYesCamo.style.border = '1px solid var(--background-dark)';
+                     btnYesCamo.style.transform = 'scale(0.3)';
                      btnYesCamo.style.boxShadow = 'none';
                      const camoArea = elements.loveGameArea.getBoundingClientRect();
                      btnYesCamo.style.top = `${Math.min(camoArea.height - 40, Math.random() * camoArea.height)}px`;
@@ -273,8 +273,8 @@
                      elements.loveGameArea.append(btnYesCamo, btnNo);
                      break;
                 case 'obvious_choice':
-                    const btnObvious = createButton('Claro!', true);
-                    const btnTrap = createButton('Sim', false);
+                    const btnObvious = createButton('Não', false);
+                    const btnTrap = createButton('Sim', true);
                     buttonContainer.append(btnObvious, btnTrap);
                     elements.loveGameArea.append(buttonContainer);
                     break;
