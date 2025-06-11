@@ -55,11 +55,15 @@
         h1, h2 {
             font-family: 'Press Start 2P', cursive;
             color: var(--text-highlight);
-            margin-bottom: 20px;
+            margin-bottom: 10px; /* Reduced margin */
             line-height: 1.4;
             font-size: 1.2rem;
         }
         p { margin-bottom: 25px; line-height: 1.6; font-size: 1rem; }
+        #question-text {
+            margin-top: 0;
+            margin-bottom: 30px; /* Increased margin for spacing */
+        }
         .btn {
             font-family: 'Press Start 2P', cursive;
             background-color: var(--light-purple);
@@ -95,7 +99,6 @@
         }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
         
-        /* Modais */
         .modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: rgba(0, 0, 0, 0.8);
@@ -111,7 +114,6 @@
         }
         .modal-content h2 { color: var(--danger-color); font-size: 1.2rem; }
         
-        /* Contadores */
         .counter-box {
             background-color: rgba(0,0,0,0.2);
             padding: 10px;
@@ -122,7 +124,6 @@
         }
         .counter-box p { margin-bottom: 5px; }
 
-        /* Estilos do Jogo Final */
         .love-game-area { position: relative; height: 150px; display: flex; flex-direction: column; justify-content: center; align-items: center; touch-action: none; gap: 10px; }
         .love-game-buttons { display: flex; gap: 10px; width: 100%; }
         .password-input { font-family: 'Source Code Pro', monospace; padding: 10px; width: 80%; border-radius: 5px; border: 2px solid var(--light-purple); background: var(--background-dark); color: var(--text-light); text-align: center; font-size: 1rem; }
@@ -137,8 +138,19 @@
     <div class="container">
         <!-- Telas do App -->
         <div id="start-screen" class="screen active"><h1>Para minha Gatinha</h1><p>Neném, preparei uma bobeirinha pra esse nosso primeiro (de muitos) dia dos namorados, queria poder estar ai com você, mas como não posso, espero que dessa forma consiga tirar um sorriso desse seu rostinho lindo.</p><div id="time-together-counter" class="counter-box"></div><p class="heart" style="margin-top: 20px;">💜</p><button id="start-btn" class="btn">Começar</button></div>
-        <div id="quiz-screen" class="screen"><h2 id="question"></h2><div id="options-grid" class="options-grid"></div></div>
-        <div id="feedback-screen" class="screen"><h2 id="feedback-message"></h2><img id="feedback-image" src="" alt="Memória do nosso momento"><button id="continue-btn" class="btn">Continuar</button></div>
+        
+        <div id="quiz-screen" class="screen">
+            <h2 id="question-title"></h2>
+            <p id="question-text"></p>
+            <div id="options-grid" class="options-grid"></div>
+        </div>
+        
+        <div id="feedback-screen" class="screen">
+            <p id="feedback-message"></p>
+            <img id="feedback-image" src="" alt="Memória do nosso momento">
+            <button id="continue-btn" class="btn">Continuar</button>
+        </div>
+        
         <div id="love-game-screen" class="screen"><h2 id="love-question-title"></h2><div id="love-game-area" class="love-game-area"></div></div>
         <div id="pre-result-screen" class="screen"><h2>Olha, e eu achei que o papel de teimoso da relação fosse meu!</h2><p>Parabéns, vc eh realmente insistente, acabou de falar um "sim" pra cada mês que estamos juntos!</p><p>Meses de uma montanha russa de sentimentos sem fim. Agora eh pra sempre em, cuidado... </p><button id="start-quiz-btn" class="btn">Proxima etapa!</button></div>
         <div id="result-screen" class="screen"><h2>Para a minha eterna namorada, Bella</h2><p>Oi meu amor, deixei pra fazer isso por último acredita?   ...</p><div id="reunion-countdown" class="counter-box"></div><img id="memory-photo" src="https://placehold.co/600x400/4a47a3/f0eafc?text=Nossa+Foto+Principal" alt="Nossa memória especial"></div>
@@ -161,18 +173,23 @@
             restart: document.getElementById('restart-btn'), startQuiz: document.getElementById('start-quiz-btn'),
             loveRestart: document.getElementById('love-restart-btn'),
         };
-        const elements = { loveGameArea: document.getElementById('love-game-area'), loveQuestionTitle: document.getElementById('love-question-title'), memoryPhoto: document.getElementById('memory-photo'), optionsGrid: document.getElementById('options-grid'), question: document.getElementById('question'), feedbackImage: document.getElementById('feedback-image'), feedbackMessage: document.getElementById('feedback-message'),
-        timeTogetherCounter: document.getElementById('time-together-counter'), reunionCountdown: document.getElementById('reunion-countdown') };
+        const elements = { 
+            loveGameArea: document.getElementById('love-game-area'), loveQuestionTitle: document.getElementById('love-question-title'), 
+            memoryPhoto: document.getElementById('memory-photo'), optionsGrid: document.getElementById('options-grid'), 
+            questionTitle: document.getElementById('question-title'), questionText: document.getElementById('question-text'), 
+            feedbackImage: document.getElementById('feedback-image'), feedbackMessage: document.getElementById('feedback-message'),
+            timeTogetherCounter: document.getElementById('time-together-counter'), reunionCountdown: document.getElementById('reunion-countdown') 
+        };
 
         const quizQuestions = [
-            { question: "Qual foi a aventura cinematográfica que deu início a tudo para nós?", options: ["Vingadores: Ultimato", "Duna: Parte Dois", "Alien: Romulus", "O Protetor 3"], correctAnswer: "Alien: Romulus", correctMessage: "Exato! Foi ali que nossa história começou.", correctImage: "https://placehold.co/600x400/1e1a3e/f0eafc?text=Foto+do+Alien" },
-            { question: "Nosso primeiro encontro oficial. O filme que me fez te calar por um momento, minha nerdzinha teve que me emprestar essa boca", options: ["Alien: Romulus", "Duna: Parte Dois", "Deadpool & Wolverine", "Sinners"], correctAnswer: "Alien: Romulus", correctMessage: "Eh amor, aqui aconteceu nosso primeiro beijo, sim, sim, foi você quem deu, eu sei. Depois desse dia, mal sabia eu, que não passaria mais um segundo sem lembrar seu gosto, e chorar com o cheiro de tridents de melancia", correctImage: "AlienRomulus.png" },
-            { question: "Qual o nome do nosso pãozinho australiano de quatro patas?", options: ["Cacau", "Luna", "Caju", "Pipoca"], correctAnswer: "Caju", correctMessage: "Nossa Caju! A coisinha mais fofa.", correctImage: "https://placehold.co/600x400/1e1a3e/f0eafc?text=Foto+da+Caju" },
-            { question: "O que eu mais amo em você, minha princesa?", options: ["Seu sorriso lindo", "Seus cabelos cacheados", "Sua boquinha linda", "Tudo, é impossível escolher!"], correctAnswer: "Tudo, é impossível escolher!", correctMessage: "É a mais pura verdade.", correctImage: "https://placehold.co/600x400/1e1a3e/f0eafc?text=Foto+Nossa" },
-            { question: "O que sua presença fez na minha vida?", options: ["Deixou tudo mais divertido", "Fez ela recuperar a cor", "Me fez gostar de ler mais", "Me deu uma filha pet"], correctAnswer: "Fez ela recuperar a cor", correctMessage: "Você é a luz e a cor dos meus dias.", correctImage: "https://placehold.co/600x400/1e1a3e/f0eafc?text=Foto+Colorida" },
-            { question: "[SUA PERGUNTA 6 AQUI]", options: ["Opção A", "Opção B", "Sua Resposta Certa", "Opção D"], correctAnswer: "Sua Resposta Certa", correctMessage: "[Sua mensagem de acerto aqui]", correctImage: "https://placehold.co/600x400/1e1a3e/f0eafc?text=Sua+Imagem+6" },
-            { question: "[SUA PERGUNTA 7 AQUI]", options: ["Sua Resposta Certa", "Opção B", "Opção C", "Opção D"], correctAnswer: "Sua Resposta Certa", correctMessage: "[Sua mensagem de acerto aqui]", correctImage: "https://placehold.co/600x400/1e1a3e/f0eafc?text=Sua+Imagem+7" },
-            { question: "[SUA PERGUNTA 8 AQUI]", options: ["Opção A", "Opção B", "Opção C", "Sua Resposta Certa"], correctAnswer: "Sua Resposta Certa", correctMessage: "[Sua mensagem de acerto aqui]", correctImage: "https://placehold.co/600x400/1e1a3e/f0eafc?text=Sua+Imagem+8" }
+            { question: "Onde cruzamos os nossos olhares pela primeira vez, onde vi a pessoa que viria a ser a coisinha mais importante da minha vida? Esta é difícil :p", options: ["-23.977439, -46.309524", "-23.991350, -46.297545", "-23.969627, -46.329678", "-23.965019, -46.319078"], correctAnswer: "-23.969627, -46.329678", correctMessage: "Foi exatamente aqui que o meu mundo parou para te ver pela primeira vez. Mal sabia eu que estava a encontrar o meu norte e a minha casa.", correctImage: "https://placehold.co/600x400/1e1a3e/f0eafc?text=Foto+do+Local" },
+            { question: "Nosso primeiro encontro oficial. O filme que me fez te calar por um momento, minha nerdzinha teve que me emprestar essa boca. Onde se passa o incidente?", options: ["The Renaissance", "USS Sulaco", "USCSS Prometheus", "USCSS Nostromo"], correctAnswer: "The Renaissance", correctMessage: "É, amor, aqui aconteceu o nosso primeiro beijo, sim, sim, foste tu que deste, eu sei. Depois desse dia, mal sabia eu que não passaria mais um segundo sem lembrar do teu gosto e chorar com o cheiro de tridents de melancia.", correctImage: "AlienRomulus.png" },
+            { question: "Qual o nome do nosso pãozinho australiano, uma partezinha da história da sua família da qual adorei fazer parte, a nossa filhinha caótica?", options: ["Cacau", "Chocolate", "Caju", "Caramelo"], correctAnswer: "Caju", correctMessage: "A nossa menina! Adoro ser pai de pet contigo, mesmo que à distância. A saudade que tenho de amassar essa coisa fofa não está escrita.", correctImage: "https://placehold.co/600x400/1e1a3e/f0eafc?text=Foto+da+Caju" },
+            { question: "A nossa flor favorita, um dos nossos primeiros assuntos, dois doidos que tinham acabado de se conhecer a falar sobre casamento. De que família vem essa flor?", options: ["Lamiaceae", "Malvaceae", "Rosaceae", "Liliaceae"], correctAnswer: "Liliaceae", correctMessage: "A nossa Tulipa Roxa. Começámos a falar de flores e acabámos a planear uma vida. É a prova de que a nossa sintonia sempre foi de outro mundo.", correctImage: "https://placehold.co/600x400/1e1a3e/f0eafc?text=Foto+Tulipa" },
+            { question: "O que a tua presença fez na minha vida? Aquilo que tanto falo que mudou, que me fez ver como ter-te por perto me completa.", options: ["Deixou tudo mais divertido, nunca ri tanto", "Fez a vida recuperar a cor, deu-me propósito", "Fez-me gostar de ler mais, Duna que o diga", "Deu-me uma filha pet, a Cajuzinha"], correctAnswer: "Fez a vida recuperar a cor, deu-me propósito", correctMessage: "É a mais pura verdade. Antes de ti, tudo era a preto e branco. Tu chegaste e pintaste o meu mundo com as cores mais lindas, principalmente o roxo.", correctImage: "https://placehold.co/600x400/1e1a3e/f0eafc?text=Foto+Colorida" },
+            { question: "O que eu mais amo em ti, minha princesa? Eu sempre te encho o saco, mas quando se trata de elogios, o que mais repito e ressalto sobre ti?", options: ["A tua bunda, primeira coisa que notei em ti", "Os teus olhos, sinto-me a flutuar", "Todas as alternativas, és perfeita", "Os teus cabelos cacheados, as tuas ondas lindas"], correctAnswer: "Todas as alternativas, és perfeita", correctMessage: "Como é que eu poderia escolher uma coisa só? Cada detalhe teu, do sorriso aos cachos, compõe a mulher perfeita que eu tenho a sorte de amar.", correctImage: "https://placehold.co/600x400/1e1a3e/f0eafc?text=Sua+Imagem+6" },
+            { question: "Levemente bêbedo e com dois amigos, mandei-te um vídeo a dizer uma coisa que nunca tinha dito a ninguém neste mundo, uma frase reservada única e exclusivamente a ti.", options: ["O amor da minha vida", "Nunca estive tão apaixonado", "És a menina mais linda deste mundo", "Tens o meu coração, a minha cabeça e a minha alma"], correctAnswer: "O amor da minha vida", correctMessage: "Mesmo meio torto, as palavras saíram do fundo do coração. E continuo a dizê-las todos os dias, porque é a verdade mais absoluta da minha vida: és o amor da minha vida.", correctImage: "https://placehold.co/600x400/1e1a3e/f0eafc?text=Sua+Imagem+7" },
+            { question: "A última pergunta, vamos lá. Qual o apelido que te dei, só para ti, minha gatinha? Sem pensar muito, só te chamei pelo que mais me lembras.", options: ["Docinho", "Cupcake", "Selina Kyle", "Estrelinha"], correctAnswer: "Estrelinha", correctMessage: "Minha pequena estrela, a que brilha mais forte e guia o meu caminho no escuro. Foi o primeiro apelido que me veio à cabeça e nenhum outro faria tanto sentido.", correctImage: "https://placehold.co/600x400/1e1a3e/f0eafc?text=Sua+Imagem+8" }
         ];
         let loveQuestionIndex = 0;
         let currentQuestionIndex = 0;
@@ -320,7 +337,19 @@
             showQuestion(); 
         }
 
-        function showQuestion() { elements.optionsGrid.innerHTML = ''; const q = quizQuestions[currentQuestionIndex]; elements.question.innerText = q.question; q.options.forEach(opt => { const btn = document.createElement('button'); btn.innerText = opt; btn.classList.add('btn'); btn.addEventListener('click', () => checkAnswer(opt)); elements.optionsGrid.appendChild(btn); }); }
+        function showQuestion() {
+            elements.optionsGrid.innerHTML = '';
+            const q = quizQuestions[currentQuestionIndex];
+            elements.questionTitle.innerText = `Pergunta ${currentQuestionIndex + 1}`;
+            elements.questionText.innerText = q.question;
+            q.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.innerText = opt;
+                btn.classList.add('btn');
+                btn.addEventListener('click', () => checkAnswer(opt));
+                elements.optionsGrid.appendChild(btn);
+            });
+        }
         function checkAnswer(selected) { if (selected === quizQuestions[currentQuestionIndex].correctAnswer) { showFeedback(); } else { screens.wrongAnswerModal.classList.add('active'); } }
         function showFeedback() { const q = quizQuestions[currentQuestionIndex]; elements.feedbackMessage.innerText = q.correctMessage; elements.feedbackImage.src = q.correctImage; switchScreen('feedback'); }
         
@@ -344,7 +373,6 @@
         
         // Contadores
         function startProgressiveCounter() {
-            // Data de início: 21 de Julho de 2024 às 20:08
             const startTime = new Date('2024-07-21T20:08:00');
             setInterval(() => {
                 const now = new Date();
@@ -357,7 +385,6 @@
             }, 1000);
         }
         function startReunionCountdown() {
-            // Data do reencontro: 11 de Julho de 2025 às 22:00
             const reunionTime = new Date('2025-07-11T22:00:00');
             setInterval(() => {
                 const now = new Date();
