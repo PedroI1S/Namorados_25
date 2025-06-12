@@ -153,8 +153,7 @@
         
         <div id="love-game-screen" class="screen"><h2 id="love-question-title"></h2><div id="love-game-area" class="love-game-area"></div></div>
         <div id="pre-result-screen" class="screen"><h2>Olha, e eu achei que o papel de teimoso da relação fosse meu!</h2><p>Parabéns, vc eh realmente insistente, acabou de falar um "sim" pra cada mês que estamos juntos!</p><p>Meses de uma montanha russa de sentimentos sem fim, encontrei meu mundinho, meu lar. Agora eh pra sempre em, cuidado... </p><button id="start-quiz-btn" class="btn">Proxima etapa!</button></div>
-        <div id="result-screen" class="screen"><h2>Para a minha eterna namorada, Bella</h2><p>Oi meu amor, se você chegou até aqui posso ter certeza de que eh você, espero que tenha sido divertido, muitas das nossas memórias estão aí, muito doido o que dá pra se fazer em um ano!</p><p>Sabe, deixei esse texto para ser escrito por úlitimo, </p><div id="reunion-countdown" class="counter-box"></div>
-        <div id="slideshow-container"></div>
+        <div id="result-screen" class="screen"><h2>Para a minha eterna namorada, Bella</h2><p>Oi meu amor, se você chegou até aqui posso ter certeza de que eh você, espero que tenha sido divertido, muitas das nossas memórias estão aí, muito doido o que dá pra se fazer em um ano!</p><p>Sabe, deixei esse texto para ser escrito por úlitimo, pensei "ah vou começar com o que não sou bou em, e na escrita eu me viro" né? Olha só quem estava errado, as perguntas que te trouxeram até aqui contem pequenas declarações, e aqui tô eu às 3 da manhã, mas sabe de uma coisa, por você vale a pena </p> <p>Sabe, às vezes fico parado lembrando como tudo começou. Não tem nada de grandioso ou cinematográfico, mas ainda assim, foi mágico. Aqueles segundos em que te olhei pela primeira vez... nem sabia o que estava acontecendo direito, só senti que algo tinha mudado. E mudou mesmo, mudou tudo, você transformou minha vida Isabella Trajano.</p><p>Você apareceu do nada, invadindo tudo, deixando sua marca permanente na minha mente — meus dias, meus pensamentos, minha vontade de ser alguém melhor. Com você, tudo parece mais leve. O mundo ainda é caótico, mas seu sorriso me dá calma, seu cheiro me traz paz, e sua risada... ah, sua risada parece bagunçar todas as regras da física, todo esse jeito chato e inflexível que tenho dentro de mim.</p><p>Eu nem sabia que podia amar assim. Com essa mistura louca de admiração, desejo e vontade de dividir até o silêncio. Te amo nos seus detalhes mais bobos, nas manias que já decorei, seus dramas chatinhos, no jeitinho que emburra quando está com sono, ou quando fala de alguma coisa nerd com brilho no olho — que, confesso, nem sempre entendo (sou menos nerd que voceeeee), mas sempre amo ouvir.</p><p>E se um dia te perguntarem por que eu te amo tanto, talvez eu nem saiba responder com exatidão. Só sei que é você. Sempre foi. Mesmo antes daquele olhar atravessado, o primeiro cafuné, a padaria virado de manhã, a primeira noite mal dormida, nós estavamos fadados a um dia encontrar um ao outro, e aquele dia que ficou marcada como o início da melhor parte da minha vida, vai sempre ter um lugar especial no meu coração.</p><p>Obrigado por vir atrás de mim, mesmo que sua mente tivesse uma bagunça aquele momento, eu sou grato por ter você na minha vida, é a melhor coisa que poderia ter me acontecido.</p><p>Você é o meu acaso mais bonito. E se eu pudesse escolher tudo de novo, ainda escolheria você.</p><p>Obrigado por tudo amor, Bella, princesa, estrelinha, maelle, gatinha, você pra sempre vai ser meu maior amor</p><div id="reunion-countdown" class="counter-box"></div><img id="memory-photo" src="S1.jpg" alt="Nossa memória especial"></div>
         
         <!-- Modais -->
         <div id="modal-wrong-answer" class="modal"><div class="modal-content"><h2>Quem é você, cadê minha namorada???</h2><p>Brincadeira, tá tudo certo. Só não me conta que vou falar que você não me amaaa. Vamos tentar de novo :p</p><button id="restart-btn" class="btn">Tentar Novamente</button></div></div>
@@ -353,33 +352,36 @@
             });
         }
         function checkAnswer(selected) { if (selected === quizQuestions[currentQuestionIndex].correctAnswer) { showFeedback(); } else { screens.wrongAnswerModal.classList.add('active'); } }
-        function showFeedback() { 
-    const q = quizQuestions[currentQuestionIndex];
-    elements.feedbackMessage.innerText = q.correctMessage;
+        function showFeedback() {
+            const q = quizQuestions[currentQuestionIndex];
+            elements.feedbackMessage.innerText = q.correctMessage;
 
-    // Limpa o conteúdo anterior
-    const feedbackImage = elements.feedbackImage;
-    const parent = feedbackImage.parentNode;
+            // Limpa o conteúdo anterior
+            const feedbackScreen = screens.feedback;
+            let oldMedia = feedbackScreen.querySelector('video');
+            if (oldMedia) oldMedia.remove();
+            elements.feedbackImage.style.display = 'none';
 
-    // Remove o elemento anterior (img ou video)
-    if (feedbackImage) feedbackImage.remove();
-    const oldVideo = parent.querySelector('video');
-    if (oldVideo) oldVideo.remove();
-
-    // Decide se é imagem ou vídeo
-    if (q.correctImage && (q.correctImage.endsWith('.mp4') || q.correctImage.endsWith('.webm'))) {
-        const video = document.createElement('video');
-        video.src = q.correctImage;
-        video.controls = true;
-        video.autoplay = true;
-        video.className = 'feedback-image';
-        parent.insertBefore(video, parent.querySelector('.btn'));
-    } else {
-        elements.feedbackImage.src = q.correctImage;
-        parent.insertBefore(elements.feedbackImage, parent.querySelector('.btn'));
-    }
-    switchScreen('feedback');
-}
+            // Decide se é imagem ou vídeo
+            if (q.correctImage && q.correctImage.endsWith('.mp4')) {
+                const video = document.createElement('video');
+                video.src = q.correctImage;
+                video.controls = true;
+                video.autoplay = true;
+                video.style.width = '100%';
+                video.style.maxWidth = '300px';
+                video.style.borderRadius = '15px';
+                video.style.marginTop = '25px';
+                video.style.border = '3px solid var(--light-purple)';
+                video.style.boxShadow = '0 0 20px var(--success-glow)';
+                video.className = 'feedback-image';
+                feedbackScreen.insertBefore(video, elements.feedbackMessage.nextSibling);
+            } else {
+                elements.feedbackImage.src = q.correctImage;
+                elements.feedbackImage.style.display = '';
+            }
+            switchScreen('feedback');
+        }
         
         function nextStep() { 
             currentQuestionIndex++; 
@@ -392,7 +394,8 @@
         }
 
         function showFinalResult() { 
-            startSlideshow();
+            elements.memoryPhoto.src = "nossa-foto-principal.jpg"; 
+            elements.memoryPhoto.onerror = () => { elements.memoryPhoto.src = "S1.jpg"; }; 
             switchScreen('result'); 
             startReunionCountdown(); 
         }
@@ -423,43 +426,6 @@
                 const s = Math.floor((diff % (1000 * 60)) / 1000);
                 elements.reunionCountdown.innerHTML = `<p>Falta para o nosso reencontro:</p>${d}d ${h}h ${m}m ${s}s`;
             }, 1000);
-        }
-
-        const slideshowImages = [
-            "S1.jpg",
-            "S2.jpg",
-            "S3.jpg",
-            "S4.jpg",
-            "S5.jpg",
-            "S6.jpg",
-            "S7.jpg",
-            "S8.jpg",
-            "S9.jpg",
-            "S10.jpg"
-        ];
-
-        function startSlideshow() {
-            const container = document.getElementById('slideshow-container');
-            container.innerHTML = '';
-            let idx = 0;
-
-            const img = document.createElement('img');
-            img.className = 'feedback-image';
-            img.style.maxWidth = '300px';
-            img.style.width = '100%';
-            img.style.borderRadius = '15px';
-            img.style.marginTop = '25px';
-            img.style.border = '3px solid var(--light-purple)';
-            img.style.boxShadow = '0 0 20px var(--success-glow)';
-            container.appendChild(img);
-
-            function showNext() {
-                img.src = slideshowImages[idx];
-                img.onerror = () => { img.src = "https://placehold.co/600x400/4a47a3/f0eafc?text=Foto"; };
-                idx = (idx + 1) % slideshowImages.length;
-            }
-            showNext();
-            setInterval(showNext, 2000); // Troca a cada 2 segundos
         }
 
         document.addEventListener('DOMContentLoaded', startProgressiveCounter);
